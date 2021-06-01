@@ -64,3 +64,5 @@ Afterwards... simpy run :D
 ```bash
 python bot.py
 ```
+
+Note: First time running will open up a tab, where you will need to allow permissions for accessing the spreadsheet. If you get one of those red warning insecure pages, you need to click `Advanced` > `Continue to page`.

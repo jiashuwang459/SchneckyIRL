@@ -261,7 +261,7 @@ class MyClient(discord.Client):
 
         page1 = discord.Embed (
             title = 'Stats 1/3',
-            description = 'Your Stats',
+            description = '%s\'s Stats' % data.name,
             colour = discord.Colour.orange()
         )
         page1.add_field(name="Role", value=data.role, inline=True)
@@ -285,7 +285,7 @@ class MyClient(discord.Client):
         page1.set_footer(text="page 1/3")
         page2 = discord.Embed (
             title = 'Stats 2/3',
-            description = 'Your Stats',
+            description = '%s\'s Stats' % data.name,
             colour = discord.Colour.orange()
         )
         page2.add_field(name="Largest Killing Spree", value=data.largest_killing_spree, inline=True)
@@ -306,7 +306,7 @@ class MyClient(discord.Client):
         page2.set_footer(text="page 2/3")
         page3 = discord.Embed (
             title = 'Stats 3/3',
-            description = 'Your Stats',
+            description = '%s\'s Stats' % data.name,
             colour = discord.Colour.orange()
         )
         page3.add_field(name="Tower Kills", value=data.turret_kills, inline=True)
@@ -372,6 +372,7 @@ class MyClient(discord.Client):
 
         if components == []:
             await self.help(ctx)
+            return;
         
         command = components[0].lower();
 
@@ -392,7 +393,28 @@ class MyClient(discord.Client):
             await self.help(ctx)
 
     async def help(self, ctx):
-        await ctx.reply('You Called For Help?', mention_author=True)
+
+        # description ="""
+        # *ladder* - displays the current ladder based on Fantasy Score
+        # *stats <league_name>* - displays the stats of the specified user (You can copy paste by using @Orianna Bot profile)
+        # *synergy* - under construction
+        # *statsview* - view stats report on the web
+        # *statslink* - view stats spreadsheet
+        # """
+
+        embed = discord.Embed (
+            title = 'You Called For Help?',
+            description = 'Usage is really easy, simply mention me with one of the following otions!',
+            colour = discord.Colour.red()
+        )
+
+        embed.add_field(name="ladder", value="displays the current ladder based on Fantasy Score", inline=False)
+        embed.add_field(name="stats <league_name>", value="displays the stats of the specified user\n*Note: You can copy paste from `@Orianna Bot profile`*", inline=False)
+        # embed.add_field(name="synergy", value="Under Construction", inline=False)
+        embed.add_field(name="statsview", value="view stats report on the web", inline=False)
+        embed.add_field(name="statslink", value="view stats spreadsheet", inline=False)
+
+        await ctx.reply(embed=embed, mention_author=True)
 
 
 
