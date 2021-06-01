@@ -16,6 +16,7 @@ import logging
 #Other Imports
 from pprint import pprint
 import time
+import math
 
 logging.basicConfig(level=logging.INFO)
 
@@ -33,7 +34,7 @@ f = open("spreadsheetid.txt", "r")
 SPREADSHEET_ID = f.readline().strip();
 f.close()
 
-PLAYERS_RANGE = 'Players!A2:AP'
+PLAYERS_RANGE = 'Players!A2:AQ'
 LADDER_RANGE = 'Ladder!A2:C'
 
 
@@ -48,48 +49,54 @@ f.close()
 
 class PlayerData:
     def __init__(self, data):
-        self.name = data[0] if data[0] else "N/A";
-        self.role = data[1] if data[1] else "N/A";
-        self.team = data[2] if data[2] else "N/A";
-        self.wins_tot = data[3] if data[3] else "N/A";
-        self.losses_tot = data[4] if data[4] else "N/A";
-        self.win_rate = data[5] if data[5] else "N/A";
-        self.time_played_tot = data[6] if data[6] else "N/A";
-        self.time_played_avg = data[7] if data[7] else "N/A";
-        self.kills_tot = data[8] if data[8] else "N/A";
-        self.deaths_tot = data[9] if data[9] else "N/A";
-        self.assists_tot = data[10] if data[10] else "N/A";
-        self.kda_tot = data[11] if data[11] else "N/A";
-        self.kill_participation = data[12] if data[12] else "N/A";
-        self.kills_avg = data[13] if data[13] else "N/A";
-        self.deaths_avg = data[14] if data[14] else "N/A";
-        self.assists_avg = data[15] if data[15] else "N/A";
-        self.kda_avg = data[16] if data[16] else "N/A";
-        self.first_bloods = data[17] if data[17] else "N/A";
-        self.first_bloods_pct = data[18] if data[18] else "N/A";
-        self.largest_killing_spree = data[19] if data[19] else "N/A";
-        self.largest_multi_kill = data[20] if data[20] else "N/A";
-        self.gold_avg = data[21] if data[21] else "N/A";
-        self.cs_avg = data[22] if data[22] else "N/A";
-        self.cs_per_min_avg = data[23] if data[23] else "N/A";
-        self.gold_share_avg = data[24] if data[24] else "N/A";
-        self.dmg_avg = data[25] if data[25] else "N/A";
-        self.dmg_per_min_avg = data[26] if data[26] else "N/A";
-        self.dmg_share_avg = data[27] if data[27] else "N/A";
-        self.dmg_taken_avg = data[28] if data[28] else "N/A";
-        self.vision_score_avg = data[29] if data[29] else "N/A";
-        self.vision_score_per_min_avg = data[30] if data[30] else "N/A";
-        self.vision_wards_tot = data[31] if data[31] else "N/A";
-        self.wards_placed_tot = data[32] if data[32] else "N/A";
-        self.wards_killed_tot = data[33] if data[33] else "N/A";
-        self.turret_kills = data[34] if data[34] else "N/A";
-        self.dmg_to_turrets = data[35] if data[35] else "N/A";
-        self.first_turret = data[36] if data[36] else "N/A";
-        self.first_turret_pct = data[37] if data[37] else "N/A";
-        self.rift_avg = data[38] if data[38] else "N/A";
-        self.baron_avg = data[39] if data[39] else "N/A";
-        self.dragon_avg = data[40] if data[40] else "N/A";
-        self.fantasy_score = data[41] if data[41] else "N/A";
+        # Set all empty values to N/A
+        for i in range(len(data)):
+            if not data[i]:
+                data[i] = "N/A"
+
+        self.name = data[0] if 0 < len(data) else "N/A";
+        self.role = data[1] if 1 < len(data) else "N/A";
+        self.team = data[2] if 2 < len(data) else "N/A";
+        self.wins_tot = data[3] if 3 < len(data) else "N/A";
+        self.losses_tot = data[4] if 4 < len(data) else "N/A";
+        self.win_rate = data[5] if 5 < len(data) else "N/A";
+        self.time_played_tot = data[6] if 6 < len(data) else "N/A";
+        self.time_played_avg = data[7] if 7 < len(data) else "N/A";
+        self.kills_tot = data[8] if 8 < len(data) else "N/A";
+        self.deaths_tot = data[9] if 9 < len(data) else "N/A";
+        self.assists_tot = data[10] if 10 < len(data) else "N/A";
+        self.kda_tot = data[11] if 11 < len(data) else "N/A";
+        self.kill_participation = data[12] if 12 < len(data) else "N/A";
+        self.kills_avg = data[13] if 13 < len(data) else "N/A";
+        self.deaths_avg = data[14] if 14 < len(data) else "N/A";
+        self.assists_avg = data[15] if 15 < len(data) else "N/A";
+        self.kda_avg = data[16] if 16 < len(data) else "N/A";
+        self.first_bloods = data[17] if 17 < len(data) else "N/A";
+        self.first_bloods_pct = data[18] if 18 < len(data) else "N/A";
+        self.largest_killing_spree = data[19] if 19 < len(data) else "N/A";
+        self.largest_multi_kill = data[20] if 20 < len(data) else "N/A";
+        self.gold_avg = data[21] if 21 < len(data) else "N/A";
+        self.cs_avg = data[22] if 22 < len(data) else "N/A";
+        self.cs_per_min_avg = data[23] if 23 < len(data) else "N/A";
+        self.gold_share_avg = data[24] if 24 < len(data) else "N/A";
+        self.dmg_avg = data[25] if 25 < len(data) else "N/A";
+        self.dmg_per_min_avg = data[26] if 26 < len(data) else "N/A";
+        self.dmg_share_avg = data[27] if 27 < len(data) else "N/A";
+        self.dmg_taken_avg = data[28] if 28 < len(data) else "N/A";
+        self.vision_score_avg = data[29] if 29 < len(data) else "N/A";
+        self.vision_score_per_min_avg = data[30] if 30 < len(data) else "N/A";
+        self.vision_wards_tot = data[31] if 31 < len(data) else "N/A";
+        self.wards_placed_tot = data[32] if 32 < len(data) else "N/A";
+        self.wards_killed_tot = data[33] if 33 < len(data) else "N/A";
+        self.turret_kills = data[34] if 34 < len(data) else "N/A";
+        self.dmg_to_turrets = data[35] if 35 < len(data) else "N/A";
+        self.first_turret = data[36] if 36 < len(data) else "N/A";
+        self.first_turret_pct = data[37] if 37 < len(data) else "N/A";
+        self.rift_avg = data[38] if 38 < len(data) else "N/A";
+        self.baron_avg = data[39] if 39 < len(data) else "N/A";
+        self.dragon_avg = data[40] if 40 < len(data) else "N/A";
+        self.fantasy_score = data[41] if 41 < len(data) else "N/A";
+        self.elo = data[42] if 42 < len(data) else "N/A";
 
 
 class SpreadSheet:
@@ -179,145 +186,73 @@ class MyClient(discord.Client):
             else :
                 await message.reply('Hello!', mention_author=True)
 
-    async def help(self, ctx):
-        await ctx.reply('You Called For Help?', mention_author=True)
-
     async def ladder(self, message):
-        await message.reply('ladder', mention_author=True)
-        # data = self.sheet.fetchLadderData();
+        data = self.sheet.fetchLadderData();
 
-        # header = "```{0:<5} {1:<32} {2:<6}```\n```".format("RANK","NAME","POINTS")
-        # entries = list();
-        # rank = 1;
-
-        # start = 0;
-        # end = start + 10;
-
-        # newData = data[start:end]
-
-        # if newData == []:
-
-        # entries = ["{0:<5} {1:<32} {2:<6}".format(str(row[0]) + ".", row[1], str(row[2])) for row in newData]
-        # content = header
-        # content += "\n".join(entries[:25]);
-        # content += "```";
-
-
-
-        # page1 = discord.Embed (
-        #     title = 'Stats 1/3',
-        #     description = 'Your Stats',
-        #     colour = discord.Colour.orange()
-        # )
-        # page1.add_field(name="Role", value=data.role, inline=True)
-        # page1.add_field(name="Team", value=data.team, inline=True)
-        # page1.add_field(name="Wins", value=data.wins_tot, inline=True)
-        # page1.add_field(name="Games", value=data.losses_tot, inline=True)
-        # page1.add_field(name="Win %", value=data.win_rate, inline=True)
-        # page1.add_field(name="Total Time played (mins)", value=data.time_played_tot, inline=True)
-        # page1.add_field(name="AVE Game Time (mins)", value=data.time_played_avg, inline=True)
-        # page1.add_field(name="Kills", value=data.kills_tot, inline=True)
-        # page1.add_field(name="Deaths", value=data.deaths_tot, inline=True)
-        # page1.add_field(name="Assists", value=data.assists_tot, inline=True)
-        # page1.add_field(name="KDA", value=data.kda_tot, inline=True)
-        # page1.add_field(name="AVE KP", value=data.kill_participation, inline=True)
-        # page1.add_field(name="AVE K/G", value=data.kills_avg, inline=True)
-        # page1.add_field(name="AVE D/G", value=data.deaths_avg, inline=True)
-        # page1.add_field(name="AVE A/G", value=data.assists_avg, inline=True)
-        # page1.add_field(name="AVE KDA/G", value=data.kda_avg, inline=True)
-        # page1.add_field(name="First Bloods", value=data.first_bloods, inline=True)
-        # page1.add_field(name="FB%", value=data.first_bloods_pct, inline=True)
-        # page2 = discord.Embed (
-        #     title = 'Stats 2/3',
-        #     description = 'Your Stats',
-        #     colour = discord.Colour.orange()
-        # )
-        # page2.add_field(name="Largest Killing Spree", value=data.largest_killing_spree, inline=True)
-        # page2.add_field(name="Largest Multi-Kill", value=data.largest_multi_kill, inline=True)
-        # page2.add_field(name="AVE Total Gold", value=data.gold_avg, inline=True)
-        # page2.add_field(name="AVE Minion CS", value=data.cs_avg, inline=True)
-        # page2.add_field(name="CS/M", value=data.cs_per_min_avg, inline=True)
-        # page2.add_field(name="AVE Gold Share", value=data.gold_share_avg, inline=True)
-        # page2.add_field(name="AVE Damage", value=data.dmg_avg, inline=True)
-        # page2.add_field(name="AVE DPM", value=data.dmg_per_min_avg, inline=True)
-        # page2.add_field(name="AVE D Share", value=data.dmg_share_avg, inline=True)
-        # page2.add_field(name="AVE Damage Taken", value=data.dmg_taken_avg, inline=True)
-        # page2.add_field(name="Vision Score", value=data.vision_score_avg, inline=True)
-        # page2.add_field(name="VS/M", value=data.vision_score_per_min_avg, inline=True)
-        # page2.add_field(name="Vision Wards", value=data.vision_wards_tot, inline=True)
-        # page2.add_field(name="Wards Placed", value=data.wards_placed_tot, inline=True)
-        # page2.add_field(name="Wards Killed", value=data.wards_killed_tot, inline=True)
-        # page3 = discord.Embed (
-        #     title = 'Stats 3/3',
-        #     description = 'Your Stats',
-        #     colour = discord.Colour.orange()
-        # )
-        # page3.add_field(name="Tower Kills", value=data.turret_kills, inline=True)
-        # page3.add_field(name="DMG to Turrets", value=data.dmg_to_turrets, inline=True)
-        # page3.add_field(name="First Tower", value=data.first_turret, inline=True)
-        # page3.add_field(name="First Tower %", value=data.first_turret_pct, inline=True)
-        # page3.add_field(name="AVE Rift Heralds", value=data.rift_avg, inline=True)
-        # page3.add_field(name="AVE Barons", value=data.baron_avg, inline=True)
-        # page3.add_field(name="AVE Dragons", value=data.dragon_avg, inline=True)
-        # page3.add_field(name="Fantasy Score", value=data.fantasy_score, inline=True)
-        # pages = [page1, page2, page3]
-
-
-        # async def updateReactions(statsMsg):
-        #     await statsMsg.clear_reactions()
-        #     await statsMsg.add_reaction('⏮')
-        #     await statsMsg.add_reaction('◀')
-        #     await statsMsg.add_reaction('▶')
-        #     await statsMsg.add_reaction('⏭')
-
-        # statsMsg = await message.reply(embed = page1)
-        # await updateReactions(statsMsg)
-
-        # def check(reaction, user):
-        #     return user == message.author
-
-        # i = 0
-        # reaction = None
-
-        # while True:
-        #     if str(reaction) == '⏮':
-        #         i = 0
-        #         await statsMsg.edit(embed = pages[i])
-        #         await updateReactions(statsMsg)
-        #     elif str(reaction) == '◀':
-        #         if i > 0:
-        #             i -= 1
-        #             await statsMsg.edit(embed = pages[i])
-        #             await updateReactions(statsMsg)
-        #     elif str(reaction) == '▶':
-        #         if i < 2:
-        #             i += 1
-        #             await statsMsg.edit(embed = pages[i])
-        #             await updateReactions(statsMsg)
-        #     elif str(reaction) == '⏭':
-        #         i = 2
-        #         await statsMsg.edit(embed = pages[i])
-        #         await updateReactions(statsMsg)
-        #     try:
-        #         reaction, user = await self.wait_for('reaction_add', timeout = 30.0, check = check)
-        #     except:
-        #         break
-
-        # await statsMsg.clear_reactions()
-
+        header = "```{0:<5} {1:<32} {2:<6}```\n```".format("RANK","NAME","POINTS")
         
-        await message.reply(embed=discord.Embed(
-            title="LeaderBoards",
-            type="rich",
-            description=content,
-            colour=0xFFFF))
+        entriesPerPage = 10;
+        numPages = math.ceil(len(data) / entriesPerPage);
+        maxIndex = numPages - 1;
 
-    async def stats(self, message, components):
-        if components == []:
+        def update(index):
+            start = index * entriesPerPage;
+            end = start + entriesPerPage;
+
+            entries = ["{0:<5} {1:<32} {2:<6}".format(str(row[0]) + ".", row[1], str(row[2])) for row in data[start:end]]
+            content = header
+            content += "\n".join(entries[:25]);
+            content += "```";
+
+            embed = discord.Embed(
+                title="LeaderBoards",
+                type="rich",
+                description=content,
+                colour=0xFFFF);
+            embed.set_footer(text="page %d/%d" %(index + 1, numPages))
+            return embed;
+
+        ladderMsg = await message.reply(embed=update(0))
+        await ladderMsg.add_reaction('⏮')
+        await ladderMsg.add_reaction('◀')
+        await ladderMsg.add_reaction('▶')
+        await ladderMsg.add_reaction('⏭')
+        await ladderMsg.add_reaction('🗑️')
+        def check(reaction, user):
+            return user == message.author and reaction.message == ladderMsg
+
+        i = 0;
+        reaction = None
+
+        while True:
+            if str(reaction) == '⏮':
+                i = 0
+                await ladderMsg.edit(embed = update(i))
+            elif str(reaction) == '◀':
+                if i > 0:
+                    i -= 1
+                    await ladderMsg.edit(embed = update(i))
+            elif str(reaction) == '▶':
+                if i < maxIndex:
+                    i += 1
+                    await ladderMsg.edit(embed = update(i))
+            elif str(reaction) == '⏭':
+                i = maxIndex
+                await ladderMsg.edit(embed = update(i))
+            elif str(reaction) == '🗑️':
+                break;
+            try:
+                reaction, user = await self.wait_for('reaction_add', timeout = 30.0, check = check)
+                await ladderMsg.remove_reaction(reaction, user)
+            except e:
+                logging.debug(e);
+                break
+        await ladderMsg.delete()
+
+    async def stats(self, message, name):
+        if name == "":
             await message.reply('No Account specified', mention_author=True)
             return
-
-        name = " ".join(components)
 
         data = self.sheet.fetchPlayerData(name);
         if not data:
@@ -347,6 +282,7 @@ class MyClient(discord.Client):
         page1.add_field(name="AVE KDA/G", value=data.kda_avg, inline=True)
         page1.add_field(name="First Bloods", value=data.first_bloods, inline=True)
         page1.add_field(name="FB%", value=data.first_bloods_pct, inline=True)
+        page1.set_footer(text="page 1/3")
         page2 = discord.Embed (
             title = 'Stats 2/3',
             description = 'Your Stats',
@@ -367,6 +303,7 @@ class MyClient(discord.Client):
         page2.add_field(name="Vision Wards", value=data.vision_wards_tot, inline=True)
         page2.add_field(name="Wards Placed", value=data.wards_placed_tot, inline=True)
         page2.add_field(name="Wards Killed", value=data.wards_killed_tot, inline=True)
+        page2.set_footer(text="page 2/3")
         page3 = discord.Embed (
             title = 'Stats 3/3',
             description = 'Your Stats',
@@ -380,22 +317,22 @@ class MyClient(discord.Client):
         page3.add_field(name="AVE Barons", value=data.baron_avg, inline=True)
         page3.add_field(name="AVE Dragons", value=data.dragon_avg, inline=True)
         page3.add_field(name="Fantasy Score", value=data.fantasy_score, inline=True)
+        page3.add_field(name="ELO", value=data.elo, inline=True)
+        page3.set_footer(text="page 3/3")
         pages = [page1, page2, page3]
 
+        numPages = len(pages)
+        maxIndex = numPages - 1;
 
-        async def updateReactions(statsMsg):
-            await statsMsg.clear_reactions()
-            await statsMsg.add_reaction('⏮')
-            await statsMsg.add_reaction('◀')
-            await statsMsg.add_reaction('▶')
-            await statsMsg.add_reaction('⏭')
-            await statsMsg.add_reaction('❌')
 
-        statsMsg = await message.reply(embed = page1)
-        await updateReactions(statsMsg)
-
+        statsMsg = await message.reply(embed = pages[0])
+        await statsMsg.add_reaction('⏮')
+        await statsMsg.add_reaction('◀')
+        await statsMsg.add_reaction('▶')
+        await statsMsg.add_reaction('⏭')
+        await statsMsg.add_reaction('🗑️')
         def check(reaction, user):
-            return user == message.author
+            return user == message.author and reaction.message == statsMsg
 
         i = 0
         reaction = None
@@ -404,30 +341,27 @@ class MyClient(discord.Client):
             if str(reaction) == '⏮':
                 i = 0
                 await statsMsg.edit(embed = pages[i])
-                await updateReactions(statsMsg)
             elif str(reaction) == '◀':
                 if i > 0:
                     i -= 1
                     await statsMsg.edit(embed = pages[i])
-                    await updateReactions(statsMsg)
             elif str(reaction) == '▶':
-                if i < 2:
+                if i < maxIndex:
                     i += 1
                     await statsMsg.edit(embed = pages[i])
-                    await updateReactions(statsMsg)
             elif str(reaction) == '⏭':
-                i = 2
+                i = maxIndex
                 await statsMsg.edit(embed = pages[i])
-                await updateReactions(statsMsg)
-            elif str(reaction) == '❌':
+            elif str(reaction) == '🗑️':
                 break;
-                
             try:
                 reaction, user = await self.wait_for('reaction_add', timeout = 30.0, check = check)
-            except:
+                await statsMsg.remove_reaction(reaction, user)
+            except e:
+                logging.debug(e);
                 break
 
-        await statsMsg.clear_reactions()
+        await statsMsg.delete()
             
 
     async def synergy(self, ctx, components):
@@ -444,7 +378,8 @@ class MyClient(discord.Client):
         if command == 'ladder':
             await self.ladder(ctx)
         elif command == 'stats':
-            await self.stats(ctx, components[1:])
+            name = " ".join(components[1:])
+            await self.stats(ctx, name)
         elif command == 'synergy':
             await self.synergy(ctx)
         elif command == 'statsview' or command == 'stats_view':
@@ -456,6 +391,8 @@ class MyClient(discord.Client):
         else:
             await self.help(ctx)
 
+    async def help(self, ctx):
+        await ctx.reply('You Called For Help?', mention_author=True)
 
 
 
