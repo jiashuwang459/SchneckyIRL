@@ -446,8 +446,8 @@ class MyClient(discord.Client):
         elif command == 'help':
             await self.help(message)
         else:
-            await self.help(message)
-
+            await message.reply("For a list of commands, use: " + self.user.mention + "help", mention_author=True)
+        
     async def prizes(self, message):
         data = self.sheet.fetchPrizeData()
 
@@ -458,6 +458,7 @@ class MyClient(discord.Client):
         )
 
         await message.reply(embed=embed, mention_author=True)
+
 
     async def season(self, message):
         data = self.sheet.fetchSeasonData()
