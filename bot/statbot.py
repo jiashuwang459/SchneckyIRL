@@ -422,8 +422,6 @@ class MyClient(discord.Client):
             await message.reply(STATS_LINK, mention_author=True)
         elif command == 'help':
             await self.help(message)
-        elif command == 'error':
-            raise Exception('spam', 'eggs')
         else:
             await self.help(message)
 
@@ -462,11 +460,11 @@ class MyClient(discord.Client):
 
         embed = discord.Embed (
             title = 'You Called For Help?',
-            description = 'Usage is really easy, simply mention me with one of the following otions!',
+            description = 'Usage is really easy, simply mention me with one of the following options!',
             colour = discord.Colour.red()
         )
 
-        embed.add_field(name="ladder", value="displays the current ladder based on Fantasy Score", inline=False)
+        embed.add_field(name="ladder", value="displays the current ladder based on your local ELO", inline=False)
         embed.add_field(name="stats <league_name>", value="displays the stats of the specified user\n*Note: You can copy paste from `@Orianna Bot profile`*", inline=False)
         # embed.add_field(name="synergy", value="Under Construction", inline=False)
         embed.add_field(name="statsview", value="view stats report on the web", inline=False)
