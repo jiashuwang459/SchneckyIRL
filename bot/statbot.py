@@ -244,6 +244,7 @@ class MyClient(discord.Client):
             return embed
 
         ladderMsg = await message.reply(embed=update(0))
+        await ladderMsg.add_reaction('📌')
         await ladderMsg.add_reaction('⏮')
         await ladderMsg.add_reaction('◀')
         await ladderMsg.add_reaction('▶')
@@ -254,9 +255,12 @@ class MyClient(discord.Client):
 
         i = 0
         reaction = None
-
+        delete = True
         while True:
-            if str(reaction) == '⏮':
+            if str(reaction) == '📌':
+                delete = False
+                break;
+            elif str(reaction) == '⏮':
                 i = 0
                 await ladderMsg.edit(embed = update(i))
             elif str(reaction) == '◀':
@@ -273,11 +277,15 @@ class MyClient(discord.Client):
             elif str(reaction) == '🗑️':
                 break
             try:
-                reaction, user = await self.wait_for('reaction_add', timeout = 30.0, check = check)
+                reaction, user = await self.wait_for('reaction_add', timeout = 60.0, check = check)
                 await ladderMsg.remove_reaction(reaction, user)
             except:
                 break
-        await ladderMsg.delete()
+
+        if delete:
+            await ladderMsg.delete()
+        else:
+            await ladderMsg.clear_reactions()
 
     async def stats(self, message, name):
         if name == "":
@@ -290,64 +298,68 @@ class MyClient(discord.Client):
             return
 
         page1 = discord.Embed (
-            title = 'Stats 1/3',
-            description = '%s\'s Stats' % data.name,
+            title = '%s\'s Stats' % data.name,
+            description = 'Main Stats',
             colour = discord.Colour.orange()
         )
-        page1.add_field(name="Role", value=data.role, inline=True)
-        page1.add_field(name="Team", value=data.team, inline=True)
-        page1.add_field(name="Wins", value=data.wins_tot, inline=True)
+
+        # page1.add_field(name="Role", value=data.role, inline=True)
+        # page1.add_field(name="Team", value=data.team, inline=True)
         page1.add_field(name="Games", value=data.losses_tot, inline=True)
+        page1.add_field(name="Wins", value=data.wins_tot, inline=True)
         page1.add_field(name="Win %", value=data.win_rate, inline=True)
-        page1.add_field(name="Total Time played (mins)", value=data.time_played_tot, inline=True)
-        page1.add_field(name="AVE Game Time (mins)", value=data.time_played_avg, inline=True)
+        page1.add_field(name="ELO", value=data.elo, inline=True)
+        page1.add_field(name="KDA", value=data.kda_tot, inline=True)
+        page1.add_field(name="AVG KDA", value=data.kda_avg, inline=True)
         page1.add_field(name="Kills", value=data.kills_tot, inline=True)
         page1.add_field(name="Deaths", value=data.deaths_tot, inline=True)
         page1.add_field(name="Assists", value=data.assists_tot, inline=True)
-        page1.add_field(name="KDA", value=data.kda_tot, inline=True)
-        page1.add_field(name="AVE KP", value=data.kill_participation, inline=True)
-        page1.add_field(name="AVE K/G", value=data.kills_avg, inline=True)
-        page1.add_field(name="AVE D/G", value=data.deaths_avg, inline=True)
-        page1.add_field(name="AVE A/G", value=data.assists_avg, inline=True)
-        page1.add_field(name="AVE KDA/G", value=data.kda_avg, inline=True)
+        page1.add_field(name="AVG Kills", value=data.kills_avg, inline=True)
+        page1.add_field(name="AVG Deaths", value=data.deaths_avg, inline=True)
+        page1.add_field(name="AVG Assists", value=data.assists_avg, inline=True)
         page1.add_field(name="First Bloods", value=data.first_bloods, inline=True)
         page1.add_field(name="FB%", value=data.first_bloods_pct, inline=True)
+        page1.add_field(name="Fantasy Score", value=data.fantasy_score, inline=True)
         page1.set_footer(text="page 1/3")
         page2 = discord.Embed (
-            title = 'Stats 2/3',
-            description = '%s\'s Stats' % data.name,
+            title = '%s\'s Stats' % data.name,
+            description = 'Stats Continued...',
             colour = discord.Colour.orange()
         )
+
+        page2.add_field(name="Total Time played (mins)", value=data.time_played_tot, inline=True)
+        page2.add_field(name="AVG Game Time (mins)", value=data.time_played_avg, inline=True)
+        page2.add_field(name="AVG KP", value=data.kill_participation, inline=True)
         page2.add_field(name="Largest Killing Spree", value=data.largest_killing_spree, inline=True)
         page2.add_field(name="Largest Multi-Kill", value=data.largest_multi_kill, inline=True)
-        page2.add_field(name="AVE Total Gold", value=data.gold_avg, inline=True)
-        page2.add_field(name="AVE Minion CS", value=data.cs_avg, inline=True)
+        page2.add_field(name="AVG Total Gold", value=data.gold_avg, inline=True)
+        page2.add_field(name="AVG Minion CS", value=data.cs_avg, inline=True)
         page2.add_field(name="CS/M", value=data.cs_per_min_avg, inline=True)
-        page2.add_field(name="AVE Gold Share", value=data.gold_share_avg, inline=True)
-        page2.add_field(name="AVE Damage", value=data.dmg_avg, inline=True)
-        page2.add_field(name="AVE DPM", value=data.dmg_per_min_avg, inline=True)
-        page2.add_field(name="AVE D Share", value=data.dmg_share_avg, inline=True)
-        page2.add_field(name="AVE Damage Taken", value=data.dmg_taken_avg, inline=True)
-        page2.add_field(name="Vision Score", value=data.vision_score_avg, inline=True)
-        page2.add_field(name="VS/M", value=data.vision_score_per_min_avg, inline=True)
-        page2.add_field(name="Vision Wards", value=data.vision_wards_tot, inline=True)
-        page2.add_field(name="Wards Placed", value=data.wards_placed_tot, inline=True)
-        page2.add_field(name="Wards Killed", value=data.wards_killed_tot, inline=True)
+        page2.add_field(name="AVG Gold Share", value=data.gold_share_avg, inline=True)
+        page2.add_field(name="AVG Damage", value=data.dmg_avg, inline=True)
+        page2.add_field(name="AVG DPM", value=data.dmg_per_min_avg, inline=True)
+        page2.add_field(name="AVG D Share", value=data.dmg_share_avg, inline=True)
+        page2.add_field(name="AVG Damage Taken", value=data.dmg_taken_avg, inline=True)
         page2.set_footer(text="page 2/3")
         page3 = discord.Embed (
-            title = 'Stats 3/3',
-            description = '%s\'s Stats' % data.name,
+            title = '%s\'s Stats' % data.name,
+            description = 'Stats Continued...',
             colour = discord.Colour.orange()
         )
+
+        page3.add_field(name="Vision Score", value=data.vision_score_avg, inline=True)
+        page3.add_field(name="VS/M", value=data.vision_score_per_min_avg, inline=True)
+        page3.add_field(name="Vision Wards", value=data.vision_wards_tot, inline=True)
+        page3.add_field(name="Wards Placed", value=data.wards_placed_tot, inline=True)
+        page3.add_field(name="Wards Killed", value=data.wards_killed_tot, inline=True)
         page3.add_field(name="Tower Kills", value=data.turret_kills, inline=True)
         page3.add_field(name="DMG to Turrets", value=data.dmg_to_turrets, inline=True)
         page3.add_field(name="First Tower", value=data.first_turret, inline=True)
         page3.add_field(name="First Tower %", value=data.first_turret_pct, inline=True)
-        page3.add_field(name="AVE Rift Heralds", value=data.rift_avg, inline=True)
-        page3.add_field(name="AVE Barons", value=data.baron_avg, inline=True)
-        page3.add_field(name="AVE Dragons", value=data.dragon_avg, inline=True)
-        page3.add_field(name="Fantasy Score", value=data.fantasy_score, inline=True)
-        page3.add_field(name="ELO", value=data.elo, inline=True)
+        page3.add_field(name="AVG Rift Heralds", value=data.rift_avg, inline=True)
+        page3.add_field(name="AVG Barons", value=data.baron_avg, inline=True)
+        page3.add_field(name="AVG Dragons", value=data.dragon_avg, inline=True)
+        
         page3.set_footer(text="page 3/3")
         pages = [page1, page2, page3]
 
@@ -356,6 +368,7 @@ class MyClient(discord.Client):
 
 
         statsMsg = await message.reply(embed = pages[0])
+        await statsMsg.add_reaction('📌')
         await statsMsg.add_reaction('⏮')
         await statsMsg.add_reaction('◀')
         await statsMsg.add_reaction('▶')
@@ -366,9 +379,13 @@ class MyClient(discord.Client):
 
         i = 0
         reaction = None
-
+        delete = True
         while True:
-            if str(reaction) == '⏮':
+
+            if str(reaction) == '📌':
+                delete = False
+                break;
+            elif str(reaction) == '⏮':
                 i = 0
                 await statsMsg.edit(embed = pages[i])
             elif str(reaction) == '◀':
@@ -383,14 +400,20 @@ class MyClient(discord.Client):
                 i = maxIndex
                 await statsMsg.edit(embed = pages[i])
             elif str(reaction) == '🗑️':
-                break
-            try:
-                reaction, user = await self.wait_for('reaction_add', timeout = 30.0, check = check)
-                await statsMsg.remove_reaction(reaction, user)
-            except:
+                print("trashed")
                 break
 
-        await statsMsg.delete()
+            try:
+                reaction, user = await self.wait_for('reaction_add', timeout = 60.0, check = check)
+                await statsMsg.remove_reaction(reaction, user)
+            except:
+                print("exceptions here")
+                break
+
+        if delete:
+            await statsMsg.delete()
+        else:
+            await statsMsg.clear_reactions()
             
 
     async def synergy(self, message, components):
