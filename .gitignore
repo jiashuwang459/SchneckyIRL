@@ -1,5 +1,4 @@
-credentials.json
-token.json
+.DS_Store
 bottoken.txt
 spreadsheetid.txt
 discord.log
