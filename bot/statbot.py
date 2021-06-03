@@ -18,6 +18,7 @@ from pprint import pprint
 import time
 import math
 import os
+import traceback
 
 logging.basicConfig(level=logging.INFO)
 
@@ -34,20 +35,21 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
 if SPREADSHEET_ID == None:
     f = open("spreadsheetid.txt", "r")
-    SPREADSHEET_ID = f.readline().strip();
+    SPREADSHEET_ID = f.readline().strip()
     f.close()
 
 PLAYERS_RANGE = 'Players!A2:AQ'
 LADDER_RANGE = 'Ladder!A2:C'
-
+SEASON_RANGE = 'Season!A2'
+PRIZES_RANGE = 'Season!A3'
 
 STATS_LINK = 'https://docs.google.com/spreadsheets/d/' + SPREADSHEET_ID
 STATS_VIEW = 'https://datastudio.google.com/reporting/4e25d626-273c-4b9c-95df-c683bd5e69e8'
 
-STAT_BOT_TOKEN = os.getenv('STAT_BOT_TOKEN');
+STAT_BOT_TOKEN = os.getenv('STAT_BOT_TOKEN')
 if STAT_BOT_TOKEN == None:
     f = open("bottoken.txt", "r")
-    STAT_BOT_TOKEN = f.readline().strip();
+    STAT_BOT_TOKEN = f.readline().strip()
     f.close()
 
 class PlayerData:
@@ -57,50 +59,49 @@ class PlayerData:
             if not data[i]:
                 data[i] = "N/A"
 
-        self.name = data[0] if 0 < len(data) else "N/A";
-        self.role = data[1] if 1 < len(data) else "N/A";
-        self.team = data[2] if 2 < len(data) else "N/A";
-        self.wins_tot = data[3] if 3 < len(data) else "N/A";
-        self.losses_tot = data[4] if 4 < len(data) else "N/A";
-        self.win_rate = data[5] if 5 < len(data) else "N/A";
-        self.time_played_tot = data[6] if 6 < len(data) else "N/A";
-        self.time_played_avg = data[7] if 7 < len(data) else "N/A";
-        self.kills_tot = data[8] if 8 < len(data) else "N/A";
-        self.deaths_tot = data[9] if 9 < len(data) else "N/A";
-        self.assists_tot = data[10] if 10 < len(data) else "N/A";
-        self.kda_tot = data[11] if 11 < len(data) else "N/A";
-        self.kill_participation = data[12] if 12 < len(data) else "N/A";
-        self.kills_avg = data[13] if 13 < len(data) else "N/A";
-        self.deaths_avg = data[14] if 14 < len(data) else "N/A";
-        self.assists_avg = data[15] if 15 < len(data) else "N/A";
-        self.kda_avg = data[16] if 16 < len(data) else "N/A";
-        self.first_bloods = data[17] if 17 < len(data) else "N/A";
-        self.first_bloods_pct = data[18] if 18 < len(data) else "N/A";
-        self.largest_killing_spree = data[19] if 19 < len(data) else "N/A";
-        self.largest_multi_kill = data[20] if 20 < len(data) else "N/A";
-        self.gold_avg = data[21] if 21 < len(data) else "N/A";
-        self.cs_avg = data[22] if 22 < len(data) else "N/A";
-        self.cs_per_min_avg = data[23] if 23 < len(data) else "N/A";
-        self.gold_share_avg = data[24] if 24 < len(data) else "N/A";
-        self.dmg_avg = data[25] if 25 < len(data) else "N/A";
-        self.dmg_per_min_avg = data[26] if 26 < len(data) else "N/A";
-        self.dmg_share_avg = data[27] if 27 < len(data) else "N/A";
-        self.dmg_taken_avg = data[28] if 28 < len(data) else "N/A";
-        self.vision_score_avg = data[29] if 29 < len(data) else "N/A";
-        self.vision_score_per_min_avg = data[30] if 30 < len(data) else "N/A";
-        self.vision_wards_tot = data[31] if 31 < len(data) else "N/A";
-        self.wards_placed_tot = data[32] if 32 < len(data) else "N/A";
-        self.wards_killed_tot = data[33] if 33 < len(data) else "N/A";
-        self.turret_kills = data[34] if 34 < len(data) else "N/A";
-        self.dmg_to_turrets = data[35] if 35 < len(data) else "N/A";
-        self.first_turret = data[36] if 36 < len(data) else "N/A";
-        self.first_turret_pct = data[37] if 37 < len(data) else "N/A";
-        self.rift_avg = data[38] if 38 < len(data) else "N/A";
-        self.baron_avg = data[39] if 39 < len(data) else "N/A";
-        self.dragon_avg = data[40] if 40 < len(data) else "N/A";
-        self.fantasy_score = data[41] if 41 < len(data) else "N/A";
-        self.elo = data[42] if 42 < len(data) else "N/A";
-
+        self.name = data[0] if 0 < len(data) else "N/A"
+        self.role = data[1] if 1 < len(data) else "N/A"
+        self.team = data[2] if 2 < len(data) else "N/A"
+        self.wins_tot = data[3] if 3 < len(data) else "N/A"
+        self.losses_tot = data[4] if 4 < len(data) else "N/A"
+        self.win_rate = data[5] if 5 < len(data) else "N/A"
+        self.time_played_tot = data[6] if 6 < len(data) else "N/A"
+        self.time_played_avg = data[7] if 7 < len(data) else "N/A"
+        self.kills_tot = data[8] if 8 < len(data) else "N/A"
+        self.deaths_tot = data[9] if 9 < len(data) else "N/A"
+        self.assists_tot = data[10] if 10 < len(data) else "N/A"
+        self.kda_tot = data[11] if 11 < len(data) else "N/A"
+        self.kill_participation = data[12] if 12 < len(data) else "N/A"
+        self.kills_avg = data[13] if 13 < len(data) else "N/A"
+        self.deaths_avg = data[14] if 14 < len(data) else "N/A"
+        self.assists_avg = data[15] if 15 < len(data) else "N/A"
+        self.kda_avg = data[16] if 16 < len(data) else "N/A"
+        self.first_bloods = data[17] if 17 < len(data) else "N/A"
+        self.first_bloods_pct = data[18] if 18 < len(data) else "N/A"
+        self.largest_killing_spree = data[19] if 19 < len(data) else "N/A"
+        self.largest_multi_kill = data[20] if 20 < len(data) else "N/A"
+        self.gold_avg = data[21] if 21 < len(data) else "N/A"
+        self.cs_avg = data[22] if 22 < len(data) else "N/A"
+        self.cs_per_min_avg = data[23] if 23 < len(data) else "N/A"
+        self.gold_share_avg = data[24] if 24 < len(data) else "N/A"
+        self.dmg_avg = data[25] if 25 < len(data) else "N/A"
+        self.dmg_per_min_avg = data[26] if 26 < len(data) else "N/A"
+        self.dmg_share_avg = data[27] if 27 < len(data) else "N/A"
+        self.dmg_taken_avg = data[28] if 28 < len(data) else "N/A"
+        self.vision_score_avg = data[29] if 29 < len(data) else "N/A"
+        self.vision_score_per_min_avg = data[30] if 30 < len(data) else "N/A"
+        self.vision_wards_tot = data[31] if 31 < len(data) else "N/A"
+        self.wards_placed_tot = data[32] if 32 < len(data) else "N/A"
+        self.wards_killed_tot = data[33] if 33 < len(data) else "N/A"
+        self.turret_kills = data[34] if 34 < len(data) else "N/A"
+        self.dmg_to_turrets = data[35] if 35 < len(data) else "N/A"
+        self.first_turret = data[36] if 36 < len(data) else "N/A"
+        self.first_turret_pct = data[37] if 37 < len(data) else "N/A"
+        self.rift_avg = data[38] if 38 < len(data) else "N/A"
+        self.baron_avg = data[39] if 39 < len(data) else "N/A"
+        self.dragon_avg = data[40] if 40 < len(data) else "N/A"
+        self.fantasy_score = data[41] if 41 < len(data) else "N/A"
+        self.elo = data[42] if 42 < len(data) else "N/A"
 
 class SpreadSheet:
 
@@ -135,7 +136,6 @@ class SpreadSheet:
         return service.spreadsheets()
 
     def fetchPlayerData(self, name):
-        #get's data from google sheets
         result = self.sheet.values().get(spreadsheetId=SPREADSHEET_ID,
                                     range=PLAYERS_RANGE).execute()
         values = result.get('values', [])
@@ -146,11 +146,10 @@ class SpreadSheet:
         else:
             for row in values:
                 if row[0] == name:
-                    return PlayerData(row);
-        return None;
+                    return PlayerData(row)
+        return None
 
     def fetchLadderData(self):
-        #get's data from google sheets
         result = self.sheet.values().get(spreadsheetId=SPREADSHEET_ID,
                                     range=LADDER_RANGE).execute()
         values = result.get('values', [])
@@ -159,14 +158,39 @@ class SpreadSheet:
         if not values:
             if(DEBUG): print('No data found.')
         else:
-            return values;
-        return None;
+            return values
+        return None
+
+    def fetchPrizeData(self):
+        result = self.sheet.values().get(spreadsheetId=SPREADSHEET_ID,
+                                    range=PRIZES_RANGE).execute()
+        values = result.get('values', [])
+
+        # pprint(values)
+        if not values:
+            if(DEBUG): print('No data found.')
+        else:
+            return values[0][0]
+        return None
+
+    def fetchSeasonData(self):
+        #get's data from google sheets
+        result = self.sheet.values().get(spreadsheetId=SPREADSHEET_ID,
+                                    range=SEASON_RANGE).execute()
+        values = result.get('values', [])
+
+        # pprint(values)
+        if not values:
+            if(DEBUG): print('No data found.')
+        else:
+            return values[0][0]
+        return None
 
 class MyClient(discord.Client):
 
     def __init__(self):
         super().__init__()
-        self.sheet = SpreadSheet();
+        self.sheet = SpreadSheet()
 
     async def on_ready(self):
         print('Logged on as {0}!'.format(self.user))
@@ -189,31 +213,35 @@ class MyClient(discord.Client):
             else :
                 await message.reply('Hello!', mention_author=True)
 
+    async def on_error(event_name, *args, **kwargs):
+        logging.warning(traceback.format_exc()) #logs the error
+
     async def ladder(self, message):
-        data = self.sheet.fetchLadderData();
+        data = self.sheet.fetchLadderData()
 
         header = "```{0:<5} {1:<32} {2:<6}```\n```".format("RANK","NAME","ELO")
         
-        entriesPerPage = 10;
-        numPages = math.ceil(len(data) / entriesPerPage);
-        maxIndex = numPages - 1;
+        entriesPerPage = 10
+        numPages = math.ceil(len(data) / entriesPerPage)
+        maxIndex = numPages - 1
 
         def update(index):
-            start = index * entriesPerPage;
-            end = start + entriesPerPage;
+            start = index * entriesPerPage
+            end = start + entriesPerPage
 
-            entries = ["{0:<5} {1:<32} {2:<6}".format(str(row[0]) + ".", row[1], str(row[2])) for row in data[start:end]]
+            # pprint(data);
+            entries = ["{0:<5} {1:<32} {2:<6}".format(str(row[0]) + ".", row[1], str(row[2])) if len(row) == 3 else "*****INVALID_DATA*****" for row in data[start:end]]
             content = header
-            content += "\n".join(entries[:25]);
-            content += "```";
+            content += "\n".join(entries)
+            content += "```"
 
             embed = discord.Embed(
                 title="LeaderBoards",
                 type="rich",
                 description=content,
-                colour=0xFFFF);
+                colour=0xFFFF)
             embed.set_footer(text="page %d/%d" %(index + 1, numPages))
-            return embed;
+            return embed
 
         ladderMsg = await message.reply(embed=update(0))
         await ladderMsg.add_reaction('⏮')
@@ -224,7 +252,7 @@ class MyClient(discord.Client):
         def check(reaction, user):
             return user == message.author and reaction.message == ladderMsg
 
-        i = 0;
+        i = 0
         reaction = None
 
         while True:
@@ -243,12 +271,11 @@ class MyClient(discord.Client):
                 i = maxIndex
                 await ladderMsg.edit(embed = update(i))
             elif str(reaction) == '🗑️':
-                break;
+                break
             try:
                 reaction, user = await self.wait_for('reaction_add', timeout = 30.0, check = check)
                 await ladderMsg.remove_reaction(reaction, user)
-            except e:
-                logging.debug(e);
+            except:
                 break
         await ladderMsg.delete()
 
@@ -257,9 +284,9 @@ class MyClient(discord.Client):
             await message.reply('No Account specified', mention_author=True)
             return
 
-        data = self.sheet.fetchPlayerData(name);
+        data = self.sheet.fetchPlayerData(name)
         if not data:
-            await message.reply('No Stats Found For Player: %s', name, mention_author=True)
+            await message.reply('No Stats Found For Player: %s' % name, mention_author=True)
             return
 
         page1 = discord.Embed (
@@ -325,7 +352,7 @@ class MyClient(discord.Client):
         pages = [page1, page2, page3]
 
         numPages = len(pages)
-        maxIndex = numPages - 1;
+        maxIndex = numPages - 1
 
 
         statsMsg = await message.reply(embed = pages[0])
@@ -356,46 +383,74 @@ class MyClient(discord.Client):
                 i = maxIndex
                 await statsMsg.edit(embed = pages[i])
             elif str(reaction) == '🗑️':
-                break;
+                break
             try:
                 reaction, user = await self.wait_for('reaction_add', timeout = 30.0, check = check)
                 await statsMsg.remove_reaction(reaction, user)
-            except e:
-                logging.debug(e);
+            except:
                 break
 
         await statsMsg.delete()
             
 
-    async def synergy(self, ctx, components):
-        await ctx.reply('synergy', mention_author=True)
+    async def synergy(self, message, components):
+        await message.reply('synergy', mention_author=True)
 
-    async def handleCommand(self, ctx, components):
+    async def handleCommand(self, message, components):
         print(components)
 
         if components == []:
-            await self.help(ctx)
-            return;
+            await self.help(message)
+            return
         
-        command = components[0].lower();
+        command = components[0].lower()
 
         if command == 'ladder':
-            await self.ladder(ctx)
+            await self.ladder(message)
         elif command == 'stats':
             name = " ".join(components[1:])
-            await self.stats(ctx, name)
+            await self.stats(message, name)
         elif command == 'synergy':
-            await self.synergy(ctx)
+            await self.synergy(message)
+        elif command == 'prizes':
+            await self.prizes(message)
+        elif command == 'season':
+            await self.season(message)
         elif command == 'statsview' or command == 'stats_view':
-            await ctx.reply(STATS_VIEW, mention_author=True)
+            await message.reply(STATS_VIEW, mention_author=True)
         elif command == 'statslink' or command == 'stats_link':
-            await ctx.reply(STATS_LINK, mention_author=True)
+            await message.reply(STATS_LINK, mention_author=True)
         elif command == 'help':
-            await self.help(ctx)
+            await self.help(message)
+        elif command == 'error':
+            raise Exception('spam', 'eggs')
         else:
-            await self.help(ctx)
+            await self.help(message)
 
-    async def help(self, ctx):
+    async def prizes(self, message):
+        data = self.sheet.fetchPrizeData()
+
+        embed = discord.Embed (
+            title = 'Prizes',
+            description = data,
+            colour = discord.Colour.red()
+        )
+
+        await message.reply(embed=embed, mention_author=True)
+
+    async def season(self, message):
+        data = self.sheet.fetchSeasonData()
+
+        embed = discord.Embed (
+            title = 'Current Season',
+            description = data,
+            colour = discord.Colour.red()
+        )
+
+        await message.reply(embed=embed, mention_author=True)
+
+
+    async def help(self, message):
 
         # description ="""
         # *ladder* - displays the current ladder based on Fantasy Score
@@ -416,8 +471,10 @@ class MyClient(discord.Client):
         # embed.add_field(name="synergy", value="Under Construction", inline=False)
         embed.add_field(name="statsview", value="view stats report on the web", inline=False)
         embed.add_field(name="statslink", value="view stats spreadsheet", inline=False)
+        embed.add_field(name="season", value="view current season", inline=False)
+        embed.add_field(name="prizes", value="view prize list for current season", inline=False)
 
-        await ctx.reply(embed=embed, mention_author=True)
+        await message.reply(embed=embed, mention_author=True)
 
 
 
