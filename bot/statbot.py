@@ -17,6 +17,7 @@ import logging
 from pprint import pprint
 import time
 import math
+import os
 
 logging.basicConfig(level=logging.INFO)
 
@@ -30,22 +31,24 @@ logger.addHandler(handler)
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
-f = open("spreadsheetid.txt", "r")
-SPREADSHEET_ID = f.readline().strip();
-f.close()
+SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
+if SPREADSHEET_ID == None:
+    f = open("../spreadsheetid.txt", "r")
+    SPREADSHEET_ID = f.readline().strip();
+    f.close()
 
 PLAYERS_RANGE = 'Players!A2:AQ'
 LADDER_RANGE = 'Ladder!A2:C'
 
 
 STATS_LINK = 'https://docs.google.com/spreadsheets/d/' + SPREADSHEET_ID
-STATS_VIEW = 'https://datastudio.google.com/u/0/reporting/1f7177c7-7e2c-447f-a075-b45f6c9dff4b/page/7YL4B?s=og4GydPyjQA'
+STATS_VIEW = 'https://datastudio.google.com/reporting/4e25d626-273c-4b9c-95df-c683bd5e69e8'
 
-
-f = open("bottoken.txt", "r")
-SchneckyIRLBotToken = f.readline().strip();
-f.close()
-
+STAT_BOT_TOKEN = os.getenv('STAT_BOT_TOKEN');
+if STAT_BOT_TOKEN == None:
+    f = open("../bottoken.txt", "r")
+    STAT_BOT_TOKEN = f.readline().strip();
+    f.close()
 
 class PlayerData:
     def __init__(self, data):
@@ -114,18 +117,18 @@ class SpreadSheet:
         # The file token.json stores the user's access and refresh tokens, and is
         # created automatically when the authorization flow completes for the first
         # time.
-        if os.path.exists('token.json'):
-            creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+        if os.path.exists('../token.json'):
+            creds = Credentials.from_authorized_user_file('../token.json', SCOPES)
         # If there are no (valid) credentials available, let the user log in.
         if not creds or not creds.valid:
             if creds and creds.expired and creds.refresh_token:
                 creds.refresh(Request())
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(
-                    'credentials.json', SCOPES)
+                    '../credentials.json', SCOPES)
                 creds = flow.run_local_server(port=0)
             # Save the credentials for the next run
-            with open('token.json', 'w') as token:
+            with open('../token.json', 'w') as token:
                 token.write(creds.to_json())
 
         service = build('sheets', 'v4', credentials=creds)
@@ -189,7 +192,7 @@ class MyClient(discord.Client):
     async def ladder(self, message):
         data = self.sheet.fetchLadderData();
 
-        header = "```{0:<5} {1:<32} {2:<6}```\n```".format("RANK","NAME","POINTS")
+        header = "```{0:<5} {1:<32} {2:<6}```\n```".format("RANK","NAME","ELO")
         
         entriesPerPage = 10;
         numPages = math.ceil(len(data) / entriesPerPage);
@@ -421,7 +424,7 @@ class MyClient(discord.Client):
     
 
 client = MyClient()
-client.run(SchneckyIRLBotToken)
+client.run(STAT_BOT_TOKEN)
 
 
 
