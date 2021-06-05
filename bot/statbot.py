@@ -145,7 +145,7 @@ class SpreadSheet:
             if(DEBUG): print('No data found.')
         else:
             for row in values:
-                if row[0] == name:
+                if "".join(row[0].split(" ")).lower() == "".join(name.split(" ")).lower():
                     return PlayerData(row)
         return None
 
