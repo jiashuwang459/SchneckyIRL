@@ -54,7 +54,12 @@ more info [here](https://developers.google.com/workspace/guides/create-credentia
 
 ### Configuring Bot Token And SpreadSheetId
 
-You need to create an additional 2 files: `bottoken.txt` and `spreadsheetid.txt`.
+You need to setup 2 env_vars:
+
+`STAT_BOT_TOKEN` should be your discord bot token.
+`SPREADSHEET_ID` should be the id of the google spreadsheet.
+
+Alternatively, you can create two additional 2 files: `bottoken.txt` and `spreadsheetid.txt`:
 
 `bottoken.txt` should contain your discord bot token.
 `spreadsheetid.txt` should contain the id of the spreadsheet.
@@ -65,4 +70,4 @@ Afterwards... simpy run :D
 python bot.py
 ```
 
-Note: First time running will open up a tab, where you will need to allow permissions for accessing the spreadsheet. If you get one of those red warning insecure pages, you need to click `Advanced` > `Continue to page`.
+Note: First time running will open up a tab, where you will need to allow permissions and get through Safety in accessing the spreadsheet. If you get one of those red warning insecure pages, you need to click `Advanced` > `Continue to page`.
