@@ -4,9 +4,9 @@
 
 # Prereqs
 
-Python 3.x
-DiscordPy
-Google Sheets API
+* Python 3.x
+* DiscordPy
+* Google Sheets API
 
 
 ## Discord Python API 
